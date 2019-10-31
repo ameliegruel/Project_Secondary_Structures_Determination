@@ -53,31 +53,28 @@ const parseTerInto = (container, lineToParse) => {
 };
 
 const parsePDB = (text) => {
-  $("#display").html(`<pre>${text}</pre>`);
   let lines = text.split('\n');
-
-  let s3D = lines.reduce((structure, line) => {
-    let key = line.substring(0, 6).trim();
-    switch (key) {
-      case "HEADER":
-        parseHeaderInto(structure, line);
-        break;
-      case "ATOM":
-        parseAtomInto(structure.atoms, line);
-        break;
-      case "HETATM":
-        parseAtomInto(structure.hetero_atoms, line);
-        break;
-      case "TER":
-        parseTerInto(structure.terminals, line);
-        break;
-    }
-    return structure;
+  return lines.reduce((structure, line) => {
+      let key = line.substring(0, 6).trim();
+      switch (key) {
+          case "HEADER":
+              parseHeaderInto(structure, line);
+              break;
+          case "ATOM":
+              parseAtomInto(structure.atoms, line);
+              break;
+          case "HETATM":
+              parseAtomInto(structure.hetero_atoms, line);
+              break;
+          case "TER":
+              parseTerInto(structure.terminals, line);
+              break;
+      }
+      return structure;
   }, {
-    atoms: [],
-    hetero_atoms: [],
-    terminals: [],
-    header: {}
+      atoms: [],
+      hetero_atoms: [],
+      terminals: [],
+      header: {}
   });
-  return s3D;
 };
