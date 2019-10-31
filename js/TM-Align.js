@@ -1,3 +1,4 @@
+// fonction globale
 const getSecondaryStructure = (structure) => {
     let carbons = getAlphaCarbons(structure);
     console.log(carbons);
@@ -9,10 +10,12 @@ const getSecondaryStructure = (structure) => {
     return [];
 };
 
+// récupère les atomes Ca
 const getAlphaCarbons = (structure) => {
     return structure.atoms.filter(atom => atom.name === "CA");
 };
 
+// sépare les pdb en chaines 
 const splitAtomsIntoChains = (atomList) => {
     return atomList.reduce((chains, atom) => {
         if (chains[atom.chainID] === undefined) {
@@ -23,6 +26,7 @@ const splitAtomsIntoChains = (atomList) => {
     }, {})
 };
 
+// obtenir la distance euclidienne entre les atomes en 3D
 const distanceBetweenAtoms = (atomA, atomB) => {
     return Math.sqrt(
         Math.pow(atomA.x - atomB.x, 2) +
