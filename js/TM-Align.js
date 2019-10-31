@@ -5,9 +5,8 @@ const getSecondaryStructure = (structure) => {
     let chains = splitAtomsIntoChains(carbons);
     console.log(chains);
     let chainA = chains["A"];
-    let distMatrix = chainA.reduce();
 
-    return [].reduce();
+    return [];
 };
 
 // récupère les atomes Ca
@@ -15,11 +14,10 @@ const getAlphaCarbons = (structure) => structure.atoms.filter(atom => atom.name 
 
 // sépare les pdb en chaines 
 const splitAtomsIntoChains = (atomList) => atomList.reduce((chains, atom) => {
-    chains[atom.chainID] = chains[atom.chainID] ? chains[atom.chainID] : [atom];
+    if (!chains[atom.chainID]) {chains[atom.chainID] = []}
     chains[atom.chainID].push(atom);
     return chains;
 }, {});
-
 
 // obtenir la distance euclidienne entre les atomes en 3D
 const distanceBetweenAtoms = (atomA, atomB) => Math.sqrt(Math.pow(atomA.x - atomB.x, 2) + Math.pow(atomA.y - atomB.y, 2) + Math.pow(atomA.z - atomB.z, 2));
