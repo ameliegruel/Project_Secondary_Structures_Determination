@@ -15,7 +15,7 @@ const getAlphaCarbons = (structure) => structure.atoms.filter(atom => atom.name 
 
 // sépare les pdb en chaines 
 const splitAtomsIntoChains = (atomList) => atomList.reduce((chains, atom) => {
-    chains[atom.chainID] = chains[atom.chainID] ? [...chains[atom.chainID], atom] : [atom];
+    chains[atom.chainID] = chains[atom.chainID] ? chains[atom.chainID] : [atom];
     chains[atom.chainID].push(atom);
     return chains;
 }, {});
