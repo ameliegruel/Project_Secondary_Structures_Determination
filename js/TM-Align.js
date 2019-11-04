@@ -17,7 +17,7 @@ const getSecondaryStructure = (structure) => {
         let chain = chains[chainName];
         let isResiduePartOfSSType = getResidueCheckerFromChain(chain);
         chain = chain.map((residueCA, idx) => {
-            if (idx <= 1 || idx > chain.length - 5) {
+            if (idx <= 1 || idx > chain.length - 3) {
                 residueCA.ss = " ";
             } else if (isResiduePartOfSSType("alpha", idx)) {
                 residueCA.ss = "H";
@@ -35,9 +35,9 @@ const getSecondaryStructure = (structure) => {
 };
 
 const getResidueCheckerFromChain = (chain) => (ssType, idx) => {
-    for (let j of range(idx - 2, idx + 1)) {
-        for (let k of range(4 - (idx - j), 5)) {
-            if (Math.abs(distanceBetweenAtoms(chain[j], chain[j + k]) - lambda[ssType][k]) >= delta[ssType]) {
+    for (let j of range(-2, 1)) {
+        for (let k of range(2, 3 - j)) {
+            if (Math.abs(distanceBetweenAtoms(chain[idx + j], chain[idx + j + k]) - lambda[ssType][k]) >= delta[ssType]) {
                 return false;
             }
         }
