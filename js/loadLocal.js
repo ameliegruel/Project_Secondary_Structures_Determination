@@ -15,10 +15,9 @@ const getContents = (event) => {
         console.time("Secondary Structure");
         let second_struct = getSecondaryStructure(struct);
         console.timeEnd("Secondary Structure");
-        console.log(second_struct);
         let html = Object.keys(second_struct).reduce((html, chainName) => {
             html += `Chain ${chainName} :\n`;
-            html += buildHTMLFromSequence(second_struct[chainName]);
+            html += buildHTMLFromChain(second_struct[chainName]);
             return html;
         }, "");
 
@@ -31,23 +30,22 @@ const getColoredResidueCode = residue => {
     return `<span style="color: ${residue.ss === "H" ? "red" : residue.ss === "E" ? "blue" : residue.ss === "T" ? "green" : "black"}; ">${IUPAC.threeToOne(residue.resName)}</span>`
 };
 
-const buildHTMLFromSequence = (sequence) => {
-    let html = "";
-    let ssLine = "";
-    let init = sequence[0].resSeq - 1;
-    for (let residue of sequence) {
-        html += getColoredResidueCode(residue);
-        ssLine += residue.ss;
-        if ((init - residue.resSeq) % 50 === 0) {
-            html += `<br>${ssLine}<br><span class="br"></span>`;
-            ssLine = "";
-        } else if ((init - residue.resSeq) % 10 === 0) {
-            html += " ";
-            ssLine += " ";
+
+const buildHTMLFromChain = sequence => {
+    let html = sequence.reduce((html, residue, idx) => {
+        html.seq += getColoredResidueCode(residue);
+        html.ss += residue.ss;
+        if ((idx+1) % 50 === 0) {
+            html.final += `${html.seq}<br>${html.ss}<br><span class="br"></span>`;
+            html.seq = "";
+            html.ss = "";
+        } else if ((idx+1) % 10 === 0) {
+            html.seq += " ";
+            html.ss += " ";
         }
-    }
-    return `${html}<br>${ssLine}<br><br><br>`;
+        return html;
+    }, {"seq": "", "ss": "", "final": ""});
+    return html.final + `${html.seq}<br>${html.ss}<br><span class="br"></span>`;
 };
 
 $('#pdb').on("change", getContents);
-console.log("test");

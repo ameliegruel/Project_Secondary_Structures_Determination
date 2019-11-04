@@ -15,15 +15,16 @@ const getSecondaryStructure = (structure) => {
     let chains = splitAtomsIntoChains(getAlphaCarbons(structure));
     return Object.keys(chains).reduce((chains, chainName) => {
         let chain = chains[chainName];
-        let isResiduePartOfSSType = getResidueCheckerFromChain(chain);
-        chain = chain.map((residueCA, idx) => {
+        let distances = getDistances(chain);
+        let isResiduePartOfSSType = getResidueCheckerFromChainAndDistances(chain, distances);
+        chain.map((residueCA, idx, chain) => {
             if (idx <= 1 || idx > chain.length - 3) {
                 residueCA.ss = " ";
             } else if (isResiduePartOfSSType("alpha", idx)) {
                 residueCA.ss = "H";
             } else if (isResiduePartOfSSType("beta", idx)) {
                 residueCA.ss = "E";
-            } else if (distanceBetweenAtoms(chain[idx - 2], chain[idx + 2]) < 8) {
+            } else if (distances[idx - 2][idx + 2] < 8) {
                 residueCA.ss = "T";
             } else {
                 residueCA.ss = " ";
@@ -34,10 +35,10 @@ const getSecondaryStructure = (structure) => {
     }, chains);
 };
 
-const getResidueCheckerFromChain = (chain) => (ssType, idx) => {
+const getResidueCheckerFromChainAndDistances = (chain, distances) => (ssType, idx) => {
     for (let j of range(-2, 1)) {
         for (let k of range(2, 3 - j)) {
-            if (Math.abs(distanceBetweenAtoms(chain[idx + j], chain[idx + j + k]) - lambda[ssType][k]) >= delta[ssType]) {
+            if (Math.abs(distances[idx + j][idx + j + k] - lambda[ssType][k]) >= delta[ssType]) {
                 return false;
             }
         }
@@ -58,7 +59,17 @@ const splitAtomsIntoChains = (atomList) => atomList.reduce((chains, atom) => {
 }, {});
 
 // obtenir la distance euclidienne entre les atomes en 3D
-const distanceBetweenAtoms = (atomA, atomB) => (Math.sqrt(Math.pow(atomA.x - atomB.x, 2) + Math.pow(atomA.y - atomB.y, 2) + Math.pow(atomA.z - atomB.z, 2)));
+let distanceBetweenAtoms = (atomA, atomB) => (Math.sqrt(Math.pow(atomA.x - atomB.x, 2) + Math.pow(atomA.y - atomB.y, 2) + Math.pow(atomA.z - atomB.z, 2)));
+
+const getDistances = (sequence) => {
+    let dists_to_calc = range(2, 5);
+    return sequence.reduce((distances, residue, idx) => {
+        if (idx < sequence.length - 4) {
+            dists_to_calc.map((k) => distances[idx][idx + k] = distanceBetweenAtoms(sequence[idx], sequence[idx + k]));
+        }
+        return distances;
+    }, Array(sequence.length).fill().map(() => Array(sequence.length).fill()));
+};
 
 // function range et getFASTA
 const range = (start, stop, step = 1) => {
