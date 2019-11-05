@@ -19,7 +19,7 @@ const getSecondaryStructure = (structure) => {
         let isResiduePartOfSSType = getResidueCheckerFromChainAndDistances(chain, distances);
         chain.map((residueCA, idx, chain) => {
             if (idx <= 1 || idx > chain.length - 3) {
-                residueCA.ss = " ";
+                residueCA.ss = "C";
             } else if (isResiduePartOfSSType("alpha", idx)) {
                 residueCA.ss = "H";
             } else if (isResiduePartOfSSType("beta", idx)) {
@@ -27,7 +27,7 @@ const getSecondaryStructure = (structure) => {
             } else if (distances[idx - 2][idx + 2] < 8) {
                 residueCA.ss = "T";
             } else {
-                residueCA.ss = " ";
+                residueCA.ss = "C";
             }
             return residueCA;
         });

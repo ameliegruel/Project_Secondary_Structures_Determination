@@ -15,13 +15,25 @@ const getContents = (event) => {
         console.time("Secondary Structure");
         let second_struct = getSecondaryStructure(struct);
         console.timeEnd("Secondary Structure");
-        let html = Object.keys(second_struct).reduce((html, chainName) => {
-            html += `Chain ${chainName} :\n`;
+        let comparable = Object.keys(second_struct).reduce((html, chainName) => {
+            html += `> Chain${chainName}\n`;
+            html += second_struct[chainName].reduce((html, residue, idx) => {
+                html += residue.ss;
+                if ((idx + 1) % 60 === 0) {
+                    html += "\n"
+                }
+                return html;
+            }, "") + "\n";
+            return html;
+        }, "");
+
+        let pretty = Object.keys(second_struct).reduce((html, chainName) => {
+            html += `> Chain${chainName}\n`;
             html += buildHTMLFromChain(second_struct[chainName]);
             return html;
         }, "");
 
-        $("#display").html(`<pre>${html}</pre>`);
+        $("#display").html(`<pre>${comparable}</pre><br><br><pre>${pretty}</pre>`);
     };
     reader.readAsText(f);
 };
@@ -35,11 +47,11 @@ const buildHTMLFromChain = sequence => {
     let html = sequence.reduce((html, residue, idx) => {
         html.seq += getColoredResidueCode(residue);
         html.ss += residue.ss;
-        if ((idx+1) % 50 === 0) {
+        if ((idx + 1) % 50 === 0) {
             html.final += `${html.seq}<br>${html.ss}<br><span class="br"></span>`;
             html.seq = "";
             html.ss = "";
-        } else if ((idx+1) % 10 === 0) {
+        } else if ((idx + 1) % 10 === 0) {
             html.seq += " ";
             html.ss += " ";
         }
